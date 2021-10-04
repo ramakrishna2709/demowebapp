@@ -1,7 +1,7 @@
-FROM python:3.6
-EXPOSE 5000
+FROM python:alpine3.7
 WORKDIR /app
 COPY . /app/
 RUN python setup.py install
 COPY app.py /app
-CMD python app.py
+EXPOSE 5000
+CMD ["python", "app.py"]
