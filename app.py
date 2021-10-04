@@ -9,10 +9,10 @@ def health():
         connection_pool = pooling.MySQLConnectionPool(pool_name="pynative_pool",
                                                     pool_size=5,
                                                     pool_reset_session=True,
-                                                    host='localhost',
+                                                    host='mysql_db',
                                                     database='test_db',
-                                                    user='root',
-                                                    password='')
+                                                    user='test',
+                                                    password='test123')
 
         print("Printing connection pool properties ")
         print("Connection Pool Name - ", connection_pool.pool_name)
@@ -65,10 +65,10 @@ def insert():
         connection_pool1 = pooling.MySQLConnectionPool(pool_name="pynative_pool",
                                                     pool_size=5,
                                                     pool_reset_session=True,
-                                                    host='localhost',
+                                                    host='mysql_db',
                                                     database='test_db',
-                                                    user='root',
-                                                    password='')
+                                                    user='test',
+                                                    password='test123')
 
        
         connection_object1 = connection_pool1.get_connection()
@@ -92,4 +92,4 @@ def insert():
     
        
 if __name__ == '__main__':
-    app.run(debug = True)
+    app.run(host="0.0.0.0",debug = True )

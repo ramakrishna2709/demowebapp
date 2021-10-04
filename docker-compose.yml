@@ -1,0 +1,38 @@
+version: '3'
+services:
+  mysql_db:
+    image: mysql:5.7
+    environment:   # Set up mysql database name and password
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test_db
+      MYSQL_USER: test
+      MYSQL_PASSWORD: test123
+      MYSQL_ALLOW_EMPTY_PASSWORD: "true"
+      
+    volumes:
+      - ./db-data:/docker-entrypoint-initdb.d
+    ports:
+      - "32000:3306"
+      
+    networks:
+      - app-tier
+    
+
+  python_app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - mysql_db
+
+    ports:
+      - "5000:5000"
+    networks:
+      - app-tier
+    
+volumes:
+  db-data:
+
+networks:
+  app-tier:
+ 
