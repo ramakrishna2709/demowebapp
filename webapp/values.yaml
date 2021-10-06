@@ -1,7 +1,7 @@
 replicaCount: 1
 image:
-  repository: chanduprasad17/webapp
-  tag: latest
+  repository: chanduprasad1708/webapp
+  tag: v1
   dbrepo: mysql
   dbtag: 5.7
 labels:
