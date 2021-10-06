@@ -1,6 +1,7 @@
 from mysql.connector import Error
 from mysql.connector import pooling
 from flask import Flask,render_template,redirect, url_for, request
+import os
 
 app = Flask(__name__)
 @app.route('/healthz')
@@ -13,6 +14,16 @@ def health():
                                                     database='test_db',
                                                     user='test',
                                                     password='test123')
+        
+        ##This will be used to gte environment variables from app pod
+        
+       #connection_pool = pooling.MySQLConnectionPool(pool_name="pynative_pool",
+                                                   # pool_size=5,
+                                                    #pool_reset_session=True,
+                                                    #host=os.getenv("MYSQL_DB_HOST"),
+                                                    #database=os.getenv("MYSQL_DATABASE"),
+                                                    #user=os.getenv("MYSQL_USER"),
+                                                    #password=os.getenv("MYSQL_PASSWORD")
 
         print("Printing connection pool properties ")
         print("Connection Pool Name - ", connection_pool.pool_name)
