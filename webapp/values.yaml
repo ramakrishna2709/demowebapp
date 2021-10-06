@@ -1,0 +1,26 @@
+replicaCount: 1
+image:
+  repository: chanduprasad17/webapp
+  tag: latest
+  dbrepo: mysql
+  dbtag: 5.7
+labels:
+  applabel: webapp
+
+
+  
+service:
+  type: LoadBalancer
+  port: 5000
+
+resources:
+  limits:
+    memory: 6Gi
+    cpu: 4
+  requests:
+    memory: 4Gi
+    cpu: 2
+
+ingress:
+  host: webapp-demo.com
+  port: 5000

@@ -1,0 +1,109 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Chart.Name }}
+  labels:
+    app: {{ .Values.labels.applabel }}
+
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Values.labels.applabel }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1 
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.labels.applabel }}
+    spec:
+      containers:
+      #Mysql
+       - name: {{ .Release.Name }}-mysql
+        image: {{ .Values.image.dbrepo }}:{{ .Values.image.dbtag }}
+        replicas: {{ .Values.replicaCount }}
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-secrets
+              key: db_root_password
+        - name: MYSQL_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-secrets
+              key: db_password
+        - name: MYSQL_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-configmap
+              key: db_name
+        - name: MYSQL_USER
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-secrets
+              key: db_user
+        ports:
+        - containerPort: 3306
+          name: mysql
+        volumeMounts:
+          - name: mysql-persistent-storage
+            mountPath: /var/lib/mysql
+      volumes:
+        - name: mysql-persistent-storage
+          persistentVolumeClaim:
+            claimName: mysql-pv-claim
+
+      #Webapp
+        - name: {{ .Release.Name }}-frontend
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          replicas: {{ .Values.replicaCount }}
+          resources:
+            requests:
+              memory: {{ .Values.resources.requests.memory }}
+              cpu: {{ .Values.resources.requests.cpu }}
+            limits:
+              memory: {{ .Values.resources.limits.memory }}
+              cpu: {{ .Values.resources.limits.cpu }}
+          ports:
+          - containerPort: {{ .Values.service.port }}
+            name: {{ .Release.Name }}-frontend
+          readinessProbe:
+            httpGet:
+              path: /
+              port:  {{ .Values.service.port }}
+            initialDelaySeconds: 1
+            periodSeconds: 1
+          livenessProbe:
+            httpGet:
+              path: /
+              port: {{ .Values.service.port }}
+            initialDelaySeconds: 1
+            periodSeconds: 5
+          env:
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-secrets
+                key: db_root_password
+          - name: MYSQL_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Release.Name }}-secrets
+                key: db_password
+          - name: MYSQL_DATABASE
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-configmap
+                key: db_name
+          - name: MYSQL_USER
+            valueFrom:
+              configMapKeyRef:
+                name: {{ .Release.Name }}-secrets
+                key: db_user
+          - name: MYSQL_DB_HOST
+            value: {{ .Release.Name }}-mysql
+    
