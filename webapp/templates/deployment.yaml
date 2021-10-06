@@ -22,7 +22,7 @@ spec:
     spec:
       containers:
       #Mysql
-       - name: {{ .Release.Name }}-mysql
+      - name: {{ .Release.Name }}-mysql
         image: {{ .Values.image.dbrepo }}:{{ .Values.image.dbtag }}
         replicas: {{ .Values.replicaCount }}
         env:
